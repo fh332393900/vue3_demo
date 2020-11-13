@@ -3,7 +3,7 @@ import { useResize } from './useResize'
 import { useDebounce } from './useDebounce'
 import echarts from 'echarts'
 
-export function useCharts (
+export function useCharts(
     elRef,
     theme = 'light'
 ) {

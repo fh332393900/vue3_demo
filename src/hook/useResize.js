@@ -1,6 +1,6 @@
 import { onMounted, onUnmounted } from 'vue'
 
-export function useResize (
+export function useResize(
     handlerFn
 ) {
     const handler = () => {
