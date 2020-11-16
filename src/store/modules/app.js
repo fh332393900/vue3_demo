@@ -7,7 +7,6 @@ const mutations = {
     TOGGLE_SIDEBAR: state => {
         
         state.sidebar.open = !state.sidebar.open
-        console.log(state.sidebar.open)
     },
     //查询的参数更新
     CHANGE_QUERY: (state,queryData) => {

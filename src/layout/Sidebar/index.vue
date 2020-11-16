@@ -10,41 +10,41 @@
                     text-color="#bfcbd9"
                     :collapse="isCollapse"
                     mode="vertical">
-                    <sidebar-item v-for="route in permissionRoutes" :key="route.path" :item="route" :basePath="route.path"></sidebar-item>
-                    
-                    
+                    <sidebar-item v-for="routeItem in permissionRoutes" :key="routeItem.path" :item="routeItem" :basePath="routeItem.path"></sidebar-item>
                 </el-menu>
             </el-scrollbar>
-            
         </div>
     </div>
 </template>
 <script>
 import Logo from './Logo.vue'
 import SidebarItem from './SidebarItem.vue'
-import { mapGetters } from 'vuex'
+import { useStore } from 'vuex'
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
 export default {
     name: 'Sidebar',
     components: {Logo,SidebarItem},
-    computed: {
-        ...mapGetters([
-            'permissionRoutes',
-            'sidebar'
-        ]),
-        //菜单伸缩
-        isCollapse() {
-            return !this.sidebar.open
-        },
-        //根据当前路由改变菜单的index，高亮
-        activeMenu() {
-            const {meta,path} = this.$route
+    setup() {
+        const store = useStore()
+        const route = useRoute()
+
+        const permissionRoutes = computed(() => store.getters.permissionRoutes)
+        const sidebar = computed(() => store.getters.sidebar)  
+        const isCollapse = computed(() => !sidebar.open)
+        const activeMenu = computed(() => {
+            const {meta,path} = route
             if (meta.activeMenu) {
                 return meta.activeMenu
             }
             return path
+        })
+        return {
+            permissionRoutes,
+            sidebar,
+            isCollapse,
+            activeMenu
         }
-    },
-    created() {
     }
 }
 </script>

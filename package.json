@@ -10,7 +10,7 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "echarts": "^4.8.0",
-    "element-plus": "^1.0.1-alpha.14",
+    "element-plus": "^1.0.1-alpha.15",
     "node-sass": "^5.0.0",
     "sass-loader": "^10.1.0",
     "vue": "^3.0.0",

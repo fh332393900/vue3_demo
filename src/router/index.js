@@ -14,12 +14,18 @@ export const constantRoutes = [{
 },{
     path: '/user',
     component: Layout,
-    redirect: '/user',
+    redirect: '/user/index',
+    meta: { title: '用户管理', icon: 'el-icon-user'},
     children: [{
-        path: 'user',
+        path: 'index',
         component: () => import('../pages/user/user.vue'),
         name: 'user',
         meta: { title: '用户列表', icon: 'el-icon-user'},
+    },{
+        path: 'add',
+        component: () => import('../pages/user/user.vue'),
+        name: 'add',
+        meta: { title: '用户添加', icon: 'el-icon-user'},
     }]
 }]
 //权限路由，在store的permission中动态添加

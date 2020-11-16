@@ -2,7 +2,7 @@
 	<div class="sidebar-logo-container" >
 		<transition name="sidebarLogoFade">
 			<router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-				
+				<h1 class="sidebar-title">{{ title }} </h1>
 			</router-link>
 			<router-link v-else key="expand" class="sidebar-logo-link" to="/">
 				<img v-if="logo" :src="logo" class="sidebar-logo">
@@ -12,6 +12,7 @@
 	</div>
 </template>
 <script>
+import { ref } from 'vue'
 export default {
 	name: 'SidebarLogo',//菜单栏logo图标
 	props: {
@@ -21,10 +22,12 @@ export default {
 			required: true
 		}
 	},
-	data() {
+	setup(props) {
+		const title = ref('111')
+		const logo = ref('')
 		return {
-			title: '111',//logo标题
-			logo: ''//logo图片
+			title,
+			logo
 		}
 	}
 }

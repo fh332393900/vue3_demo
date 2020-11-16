@@ -1,9 +1,9 @@
 <template>
-    <div  class="app-warpper">
+    <div :class="{hideSidebar: isHideSider}" class="app-warpper">
         <sidebar class="sidebar-container"></sidebar>
         <div class="main-container">
             <div>
-                <!-- <navbar></navbar> -->
+                <navbar></navbar>
             </div>
             <app-main></app-main>
         </div>
@@ -13,8 +13,21 @@
 import Sidebar from './Sidebar/index.vue'
 import AppMain from './AppMain.vue'
 import Navbar from './Navbar.vue'
+import { useStore } from 'vuex'
+import { computed } from 'vue'
 export default {
-    components: {Navbar,AppMain,Sidebar}
+    components: {Navbar,AppMain,Sidebar},
+    setup() {
+        const store = useStore()
+        const sidebarRef = computed(() => store.getters.sidebar)
+
+        const isHideSider = computed(() => { !sidebarRef.open })
+        console.log(sidebarRef.open)
+        return {
+            sidebarRef,
+            isHideSider
+        }
+    }
 }
 </script>
 <style lang="scss" scoped>

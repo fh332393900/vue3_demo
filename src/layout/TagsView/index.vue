@@ -1,7 +1,6 @@
 <template>
     <div class="tags-view">
         <scroll-pane ref="scrollPane" class="tags-view-wrapper">
-            
             <router-link 
                 class="tags-view-item"
                 ref="tag"
