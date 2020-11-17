@@ -4,6 +4,7 @@
         <div class="main-container">
             <div>
                 <navbar></navbar>
+                <tags-view></tags-view>
             </div>
             <app-main></app-main>
         </div>
@@ -13,10 +14,11 @@
 import Sidebar from './Sidebar/index.vue'
 import AppMain from './AppMain.vue'
 import Navbar from './Navbar.vue'
+import TagsView from './TagsView/index.vue'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
 export default {
-    components: {Navbar,AppMain,Sidebar},
+    components: {Navbar,AppMain,Sidebar,TagsView},
     setup() {
         const store = useStore()
         const sidebarRef = computed(() => store.getters.sidebar.open)

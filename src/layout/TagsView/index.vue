@@ -3,16 +3,15 @@
         <scroll-pane ref="scrollPane" class="tags-view-wrapper">
             <router-link 
                 class="tags-view-item"
-                ref="tag"
+                ref="tagsRef"
                 v-for="tag in visitedViews"
                 :class="isActive(tag) ? 'active' : ''"
                 :key="tag.path" 
                 :to="{path: tag.path,query: tag.query}"
-                @contextmenu.prevent.native="openMenu(tag,$event)"
             >
                 <i :class="tag.meta.icon" v-if="isActive(tag)"></i>
                 {{tag.title}}
-                <span v-if="tag.path != '/dashboard'" class="el-icon-close" @click.prevent.stop="closeSelectedTag(tag)"></span>
+                <span v-if="!tag.meta.affix" class="el-icon-close" @click.prevent.stop="closeSelectedTag(tag)"></span>
             </router-link>
         </scroll-pane>
         <ul v-show="visible" :style="{left:left+'px',top:top+'px'}" class="contextmenu">
@@ -24,31 +23,136 @@
 <script>
 import ScrollPane from './ScrollPane.vue'
 import path from 'path'
+import { useStore } from 'vuex'
+import { computed, isRef, reactive, ref, unref, watch, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 export default {
     name: 'TagsView',//标签页
     components: {ScrollPane},
-    data() {
-        return {
+    setup() {
+        const store = useStore()
+        const route = useRoute()
+        const router = useRouter()
+        const visitedViews = computed(() => store.state.tagsView.visitedViews)
+        const routes = computed(() => store.state.permission.routes)
+        initTags()
+        addTags()
+
+        watch(route,() => {
+            addTags()
+            moveToCurrentTag()
+        })
+        const state = reactive({
             visible: false,
             left: 0,
             top: 0,
             selectedTag: {},
-            affixTags: [],//初始化的标签
+            affixTags: []
+        })
+        const visibleRef = ref(false)
+        const leftRef = ref(0)
+        const topRef = ref(0)
+        const selectedTagRef = ref({})
+        let affixTagsRef = ref([])
+        /**
+         * 初始化标签
+         * @author fenghang
+         * @version v1
+         */
+        function initTags() {
+            affixTagsRef = filterAffixTags(routes)
+            for(const tag of affixTagsRef) {
+                if (tag.name) {
+                    store.dispatch('addVisitedView',tag)
+                }
+            }
         }
-    },
-    computed: {
-        visitedViews() {
-            return this.$store.state.tagsView.visitedViews
-        },
-        routes() {
-            return this.$store.state.permission.routes
+        /**
+         * 筛选路由中带有affix的标签，一进入项目默认开启的标签，这部分标签不能关闭
+         * @author fenghang
+         * @param {Object,String}
+         * @version v1
+         */
+        function filterAffixTags(routesRef,basePath ='/') {
+            let tags = []
+            const routesArr = unref(routesRef)
+            routesArr.forEach(routeItem => {
+                if (routeItem.path == '/') { 
+                    const tagPath = path.resolve(basePath,routeItem.children[0].path)
+                    tags.push({
+                        fullPath: tagPath,
+                        path: tagPath,
+                        name: routeItem.children[0].name,
+                        meta: routeItem.children[0].meta
+                    }) 
+                }
+            })
+            return tags
+        }
+        function addTags() {
+            const { name } = route
+            if (name) {
+                store.dispatch('addVisitedView',route)
+            }
+        }
+        /**
+         * 标签跟随移动
+         * @author fenghang
+         * @version v1
+         */
+        const tagsRef = ref(null)
+        function moveToCurrentTag() {
+            // nextTick(() => {
+            //     for (const tag of tagsRef) {
+            //         if (tag.to.path === route.path) {
+            //             this.$refs.scrollPane.moveToTarget(tag)
+            //             break
+            //         }
+            //     }
+            // })
+        }
+        /**
+         * 关闭标签
+         * @author fenghang
+         * @param {Object}
+         * @version v1
+         */
+        function closeSelectedTag(tag) {
+            store.dispatch('delVisitedView',tag).then(visitedViews => {
+                this.toLastView(visitedViews,tag)
+            })
+        }
+        /**
+         * 关闭标签时，如果是当前标签就跳转到最后一个标签
+         * @author fenghang
+         * @param {Object,Object}
+         * @version v3
+         */
+        function toLastView(visitedViews,view) {
+            const lastView = visitedViews.slice(-1)[0]
+            //如果关闭的是其他标签就不做跳转
+            if (lastView && lastView.fullPath != route.fullPath) {
+                router.push(lastView.fullPath)
+            }
+        }
+        return {
+            visitedViews,
+            routes,
+            visibleRef,
+            leftRef,
+            topRef,
+            selectedTagRef,
+            affixTagsRef,
+            initTags,
+            filterAffixTags,
+            addTags,
+            tagsRef,
+            moveToCurrentTag,
+            closeSelectedTag,
+            toLastView
         }
     },
     watch: {
-        $route() {
-            this.addTags()
-            this.moveToCurrentTag()
-        },
         //监听关闭菜单是否打开
         visible(value) {
             if (value) {
@@ -58,103 +162,13 @@ export default {
             }
         }
     },
-    created() {
-        this.initTags()
-        this.addTags()
-    },
     methods: {
         isActive(route) {
             return route.path === this.$route.path
         },
-        /**
-         * 筛选路由中带有affix的标签，一进入项目默认开启的标签，这部分标签不能关闭
-         * @author fenghang
-         * @param {Object,String}
-         * @version v1
-         */
-        filterAffixTags(routes,basePath ='/') {
-            let tags = []
-            this.routes.forEach(route => {
-                
-                if (route.path == '/') { 
-                    const tagPath = path.resolve(basePath,route.children[0].path)
-                    tags.push({
-                        fullPath: tagPath,
-                        path: tagPath,
-                        name: route.children[0].name,
-                        meta: route.children[0].meta
-                    }) 
-                }
-            })
-            return tags
-        },
-        /**
-         * 初始化标签
-         * @author fenghang
-         * @version v1
-         */
-        initTags() {
-            this.affixTags = this.filterAffixTags(this.routes)
-            for(const tag of this.affixTags) {
-                if (tag.name) {
-                    this.$store.dispatch('addVisitedView',tag)
-                }
-            }
-        },
-        addTags() {
-             const {name} = this.$route
-             if (name) {
-                this.$store.dispatch('addView',this.$route)
-             }
-        },
-        /**
-         * 跳转到点击的标签页，标签跟随移动
-         * @author fenghang
-         * @version v2
-         *  v2: 修改了路由跳转时更新query信息
-         */
-        moveToCurrentTag() {
-            const tags = this.$refs.tag
-            this.$nextTick(() => {
-                for (const tag of tags) {
-                    if (tag.to.path === this.$route.path) {
-                        this.$refs.scrollPane.moveToTarget(tag)
-                        // 这样就可以更新路由的query信息
-                        if (tag.to.fullPath !== this.$route.fullPath) {
-                            this.$store.dispatch('updateVisitedView', this.$route)
-                        }
-                        break
-                    }
-                }
-            })
-        },
-        /**
-         * 关闭标签
-         * @author fenghang
-         * @param {Object}
-         * @version v1
-         */
-        closeSelectedTag(tag) {
-            console.log(tag)
-            this.$store.dispatch('delView',tag).then(({ visitedViews }) => {
-                this.toLastView(visitedViews,tag)
-            })
-            this.$store.dispatch('removeQueryKey', tag.fullPath)
-        },
-        /**
-         * 关闭标签时，如果是当前标签就跳转到最后一个标签
-         * @author fenghang
-         * @param {Object,Object}
-         * @version v1
-         */
-        toLastView(visitedViews,view) {
-            const lastView = visitedViews.slice(-1)[0]
-            //如果关闭的是其他标签就不做跳转
-            if (lastView && lastView.fullPath != this.$route.fullPath) {
-                this.$router.push(lastView.fullPath)
-                //this.$router.back()
-            }
-        },
+        
+        
+        
         //关闭其他的标签
         closeOthersTags() {
             //选择的标签是当前路由，就不用跳转
@@ -223,6 +237,9 @@ export default {
             margin-top: 4px;
             margin-left: 5px;
             
+        }
+        a {
+            text-decoration: none;
         }
     }
     .active {
