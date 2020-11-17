@@ -4,18 +4,18 @@
             <router-link :to="resolvePath(onlyOneChild.path)">
                 <el-menu-item :index="resolvePath(onlyOneChild.path)">
                     <i :class="onlyOneChild.meta.icon"></i>
-                    <span>{{onlyOneChild.meta.title}}</span>
+                    <template #title>{{onlyOneChild.meta.title}}</template>
                 </el-menu-item>
             </router-link>
         </template>
         <el-submenu v-else :index="resolvePath(item.path)" popper-append-to-body>
             <template #title>
                 <i :class="item.meta.icon"></i>
-                <span >{{item.meta.title}}</span>
+                <span>{{item.meta.title}}</span>
             </template>
             <router-link v-for="child in item.children" :key="child.path" :to="resolvePath(child.path)">
                 <el-menu-item :index="resolvePath(child.path)">
-                    <span >{{child.meta.title}}</span>
+                    <span>{{child.meta.title}}</span>
                 </el-menu-item>
             </router-link>
         </el-submenu>
@@ -85,7 +85,6 @@ export default {
     .el-menu-item:hover{
         outline: 0 !important;
         color: #1979f1 !important;
-        background: none !important;
     }
     .el-menu-item:hover > i {
         color: #1979f1 !important;
@@ -97,5 +96,14 @@ export default {
         a {
             text-decoration: none;
         }
+        /*隐藏文字*/
+        .el-menu--collapse  .el-submenu__title span{
+            display: none;
+        }
+        /*隐藏 > */
+        .el-menu--collapse  .el-submenu__title .el-submenu__icon-arrow{
+            display: none;
+        }
+
     } 
 </style>

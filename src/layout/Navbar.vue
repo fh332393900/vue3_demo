@@ -8,7 +8,7 @@
             <div class="right-menu-item">
                
             </div>
-            <el-dropdown class="avatar-container" trigger="click">
+            <!-- <el-dropdown class="avatar-container" trigger="click">
                 <div class="avatar-wrapper">
                     <el-avatar class="user-avatar" src="https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg"></el-avatar>
                     <i class="el-icon-caret-bottom" />
@@ -18,7 +18,7 @@
                         <span style="display:block;" @click="logout">退出登录</span>
                     </el-dropdown-item>
                 </el-dropdown-menu>
-            </el-dropdown>
+            </el-dropdown> -->
             
         </div>
     </div>

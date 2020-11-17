@@ -8,6 +8,7 @@
                     class="el-menu-vertical-demo"
                     background-color="#304156"
                     text-color="#bfcbd9"
+                    :router="true"
                     :collapse="isCollapse"
                     mode="vertical">
                     <sidebar-item v-for="routeItem in permissionRoutes" :key="routeItem.path" :item="routeItem" :basePath="routeItem.path"></sidebar-item>
@@ -30,8 +31,8 @@ export default {
         const route = useRoute()
 
         const permissionRoutes = computed(() => store.getters.permissionRoutes)
-        const sidebar = computed(() => store.getters.sidebar)  
-        const isCollapse = computed(() => !sidebar.open)
+        const sidebar = computed(() => store.getters.sidebar.open)  
+        const isCollapse = computed(() => !sidebar.value)
         const activeMenu = computed(() => {
             const {meta,path} = route
             if (meta.activeMenu) {

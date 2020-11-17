@@ -19,10 +19,10 @@ export default {
     components: {Navbar,AppMain,Sidebar},
     setup() {
         const store = useStore()
-        const sidebarRef = computed(() => store.getters.sidebar)
+        const sidebarRef = computed(() => store.getters.sidebar.open)
 
-        const isHideSider = computed(() => { !sidebarRef.open })
-        console.log(sidebarRef.open)
+        const isHideSider = computed(() => !sidebarRef.value)
+        console.log(sidebarRef.value)
         return {
             sidebarRef,
             isHideSider
