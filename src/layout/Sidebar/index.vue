@@ -22,7 +22,7 @@ import Logo from './Logo.vue'
 import SidebarItem from './SidebarItem.vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
-import { computed } from 'vue'
+import { computed, isRef } from 'vue'
 export default {
     name: 'Sidebar',
     components: {Logo,SidebarItem},
@@ -32,6 +32,7 @@ export default {
 
         const permissionRoutes = computed(() => store.getters.permissionRoutes)
         const sidebar = computed(() => store.getters.sidebar.open)  
+        console.log(isRef(sidebar))
         const isCollapse = computed(() => !sidebar.value)
         const activeMenu = computed(() => {
             const {meta,path} = route

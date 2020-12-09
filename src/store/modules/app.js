@@ -8,17 +8,16 @@ const mutations = {
         
         state.sidebar.open = !state.sidebar.open
     },
-    //查询的参数更新
-    CHANGE_QUERY: (state,queryData) => {
+    CHANGE_SIDERBAR: (state,value) => {
+        state.sidebar.open = value
     },
 }
 const actions = {
     toggleSideBar({ commit }) {
         commit('TOGGLE_SIDEBAR')
     },
-    //更新查询的参数
-    changeQuery({commit},queryData) {
-        commit('CHANGE_QUERY',queryData)
+    changeSiderBar({commit},value) {
+        commit('CHANGE_SIDERBAR',value)
     },
 }
 export default {

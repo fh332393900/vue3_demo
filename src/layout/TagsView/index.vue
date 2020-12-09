@@ -35,8 +35,7 @@ export default {
         const router = useRouter()
         const visitedViews = computed(() => store.state.tagsView.visitedViews)
         const routes = computed(() => store.state.permission.routes)
-        initTags()
-        addTags()
+        
 
         watch(route,() => {
             addTags()
@@ -53,15 +52,15 @@ export default {
         const leftRef = ref(0)
         const topRef = ref(0)
         const selectedTagRef = ref({})
-        let affixTagsRef = ref([])
+        let affixTagsRef = ref(0)
         /**
          * 初始化标签
          * @author fenghang
          * @version v1
          */
-        function initTags() {
-            affixTagsRef = filterAffixTags(routes)
-            for(const tag of affixTagsRef) {
+        const initTags = () => {
+            affixTagsRef.value = filterAffixTags(routes)
+            for(const tag of affixTagsRef.value) {
                 if (tag.name) {
                     store.dispatch('addVisitedView',tag)
                 }
@@ -135,6 +134,8 @@ export default {
                 router.push(lastView.fullPath)
             }
         }
+        initTags()
+        addTags()
         return {
             visitedViews,
             routes,

@@ -17,17 +17,42 @@ import Navbar from './Navbar.vue'
 import TagsView from './TagsView/index.vue'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
+import { useResize } from '@/hook/useResize'
+import { useDebounce } from '@/hook/useDebounce'
 export default {
     components: {Navbar,AppMain,Sidebar,TagsView},
     setup() {
         const store = useStore()
         const sidebarRef = computed(() => store.getters.sidebar.open)
-
         const isHideSider = computed(() => !sidebarRef.value)
-        console.log(sidebarRef.value)
+
+        const WIDTH = 1024
+        const { body } = document
+        const isMobile = () => {
+            //可视区域
+            const rect = body.getBoundingClientRect()
+            return rect.width - 1 < WIDTH
+        }
+        //窗口宽度发生改变时
+        const resizeHandler = () => {
+            if (!document.hidden) {
+                const isMobileValue = isMobile()
+                if (isMobileValue) {
+                    store.dispatch('app/changeSiderBar', false)
+                } else {
+                    store.dispatch('app/changeSiderBar', true)
+                }
+            }
+        }
+        let resizeHandlerFn = resizeHandler
+        const [debounceResize] = useDebounce(resizeHandler, 200)
+        resizeHandlerFn = debounceResize
+        useResize(resizeHandlerFn)
         return {
             sidebarRef,
-            isHideSider
+            isHideSider,
+            isMobile,
+            resizeHandler
         }
     }
 }
